@@ -1,47 +1,6 @@
 module
 
 public import Development.EtaleCohomology.CohomologicalPurity.LeafChartCut
-import Mathlib.Algebra.Order.Floor.Extended
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Algebra.Order.Interval.Basic
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Analysis.Normed.Algebra.GelfandRadius
-import Mathlib.Analysis.SpecialFunctions.Bernstein
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
-import Mathlib.Combinatorics.Enumerative.DyckWord
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
-import Mathlib.Data.NNRat.Floor
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Geometry.Euclidean.Volume.Basic
-import Mathlib.NumberTheory.Chebyshev
-import Mathlib.NumberTheory.Height.NumberField
-import Mathlib.NumberTheory.Height.Projectivization
-import Mathlib.NumberTheory.LucasLehmer
-import Mathlib.NumberTheory.SelbergSieve
-import Mathlib.RingTheory.Radical.NatInt
-import Mathlib.Tactic.Echelon.Zsqrtd
-import Mathlib.Tactic.Inclusion.Extension.Core.Core
-import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
-import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
-import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Hypotheses
-import Mathlib.Tactic.Linter.HaveILetI
-import Mathlib.Tactic.Linter.Style
-import Mathlib.Tactic.NormNum.Irrational
-import Mathlib.Tactic.NormNum.IsCoprime
-import Mathlib.Tactic.NormNum.IsSquare
-import Mathlib.Tactic.NormNum.LegendreSymbol
-import Mathlib.Tactic.NormNum.ModEq
-import Mathlib.Tactic.NormNum.NatFib
-import Mathlib.Tactic.NormNum.NatLog
-import Mathlib.Tactic.NormNum.NatSqrt
-import Mathlib.Tactic.NormNum.Ordinal
-import Mathlib.Tactic.NormNum.Parity
-import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Tactic.NormNum.RealSqrt
-import Mathlib.Tactic.Polynomial.Basic
 
 @[expose] public section
 
@@ -65,9 +24,9 @@ theorem leafPoly : LateralTheory.CohomologicalPurity.ChartCut.LeafPoly := by
   let P := MvPolynomial (Fin d ⊕ Fin e) R
   let S := MvPolynomial (Fin d) (MvPolynomial (Fin e) R)
   let Cc := MvPolynomial (Fin d) (A ⧸ I)
-  letI : Algebra P A := ψ.toAlgebra
-  letI : Algebra P S := (kap d e R).toAlgebra
-  letI : Algebra S (S ⊗[P] A) := Algebra.TensorProduct.leftAlgebra (R := P) (A := S) (B := A)
+  let : Algebra P A := ψ.toAlgebra
+  let : Algebra P S := (kap d e R).toAlgebra
+  let : Algebra S (S ⊗[P] A) := Algebra.TensorProduct.leftAlgebra (R := P) (A := S) (B := A)
   have hb : (algebraMap S (S ⊗[P] A)).Etale :=
     RingHom.IsStableUnderBaseChange.tensorProduct RingHom.Etale.isStableUnderBaseChange S hψ
   have hx : ∀ j, x j ∈ I := fun j => hI ▸ Ideal.subset_span ⟨j, rfl⟩
@@ -75,7 +34,7 @@ theorem leafPoly : LateralTheory.CohomologicalPurity.ChartCut.LeafPoly := by
   let gy : MvPolynomial (Fin e) R →+* A ⧸ I := eval₂Hom ((Ideal.Quotient.mk I).comp φ) fun i => Ideal.Quotient.mk I (y i)
   let FS : S →+* Cc := eval₂Hom ((C : A ⧸ I →+* Cc).comp gy) X
   let ρ : P →+* Cc := (C : A ⧸ I →+* Cc).comp ((Ideal.Quotient.mk I).comp ψ)
-  letI : Algebra P Cc := ρ.toAlgebra
+  let : Algebra P Cc := ρ.toAlgebra
   have hFSC : ∀ p, FS (C p) = C (gy p) := fun p => MvPolynomial.eval₂Hom_C _ _ _
   have hFSX : ∀ j, FS (X j) = X j := fun j => MvPolynomial.eval₂Hom_X' _ _ _
   have hgC : ∀ r, gy (C r) = Ideal.Quotient.mk I (φ r) := fun r => MvPolynomial.eval₂Hom_C _ _ _
@@ -112,7 +71,9 @@ theorem leafPoly : LateralTheory.CohomologicalPurity.ChartCut.LeafPoly := by
       fun a ha => hk ha) fun j => X j ⊗ₜ[P] (1 : A)
   have hF1 : ∀ s : S, F (s ⊗ₜ[P] (1 : A)) = FS s := fun s => by simp [F, fS, fA]
   have hGC : ∀ a, G (C (Ideal.Quotient.mk I a)) = (1 : S) ⊗ₜ[P] a := fun a => by
-    erw [MvPolynomial.eval₂Hom_C]; rfl
+    dsimp only [G]
+    rw [MvPolynomial.eval₂Hom_C]
+    rfl
   have hGX : ∀ j, G (X j) = X j ⊗ₜ[P] (1 : A) := fun j => MvPolynomial.eval₂Hom_X' _ _ _
   have hFG : F.comp G = RingHom.id Cc := by
     apply MvPolynomial.ringHom_ext
@@ -144,13 +105,14 @@ theorem leafPoly : LateralTheory.CohomologicalPurity.ChartCut.LeafPoly := by
       rw [hF1, hFSX, hGX]
   have hGF : G.comp F = RingHom.id _ := by
     refine RingHom.ext fun z => ?_
-    induction z using TensorProduct.induction_on with
-    | zero => simp
+    induction z using TensorProduct.inductionOn with
     | tmul s a =>
       have hs := RingHom.congr_fun hS s
       simp only [RingHom.comp_apply, Algebra.TensorProduct.includeLeftRingHom_apply] at hs
       have ha : G (F ((1 : S) ⊗ₜ[P] a)) = (1 : S) ⊗ₜ[P] a := by
-        simp [F, G, fS, fA]; erw [MvPolynomial.eval₂Hom_C]; rfl
+        have hF2 : F ((1 : S) ⊗ₜ[P] a) = C (Ideal.Quotient.mk I a) := by
+          simp [F, fS, fA]
+        rw [hF2, hGC]
       have hm : s ⊗ₜ[P] a = (s ⊗ₜ[P] (1 : A)) * ((1 : S) ⊗ₜ[P] a) := by simp
       rw [RingHom.id_apply, RingHom.comp_apply, hm, map_mul, map_mul, hs, ha]
     | add u v hu hv => simp only [RingHom.comp_apply, RingHom.id_apply, map_add (f := _)] at hu hv ⊢; rw [hu, hv]
@@ -159,14 +121,19 @@ theorem leafPoly : LateralTheory.CohomologicalPurity.ChartCut.LeafPoly := by
   have s1 : ∀ r, σ (C r) = C (C r) := fun r => MvPolynomial.sumAlgEquiv_C_inl (R := R) (S₁ := Fin d) (S₂ := Fin e) r
   have s2 : ∀ j, σ (X (Sum.inl j)) = X j := fun j => MvPolynomial.sumAlgEquiv_X_inl (R := R) (S₁ := Fin d) (S₂ := Fin e) j
   have s3 : ∀ i, σ (X (Sum.inr i)) = C (X i) := fun i => MvPolynomial.sumAlgEquiv_X_inr (R := R) (S₁ := Fin d) (S₂ := Fin e) i
+  have hE : ∀ s : S, E (algebraMap S (S ⊗[P] A) s) = FS s := hF1
   have key : (MvPolynomial.eval₂Hom ((MvPolynomial.C : A ⧸ I →+* MvPolynomial (Fin d) (A ⧸ I)).comp
       ((Ideal.Quotient.mk I).comp φ)) (Sum.elim MvPolynomial.X fun i => MvPolynomial.C (Ideal.Quotient.mk I (y i)))) =
       (E.toRingHom.comp (algebraMap S (S ⊗[P] A))).comp σ.toRingHom := by
     apply MvPolynomial.ringHom_ext
-    · intro r; change _ = (E.toRingHom.comp (algebraMap S (S ⊗[P] A))) (σ (C r)); rw [s1]; simp [E, F, fS]; erw [MvPolynomial.eval₂Hom_C]; simp [gy]
+    · intro r
+      simp only [MvPolynomial.eval₂Hom_C, RingHom.comp_apply, RingEquiv.toRingHom_eq_coe,
+        RingEquiv.coe_toRingHom, s1, hE, hFSC, hgC]
     · rintro (j | i)
-      · change _ = (E.toRingHom.comp (algebraMap S (S ⊗[P] A))) (σ (X (Sum.inl j))); rw [s2]; simp [E, F, fS]; erw [MvPolynomial.eval₂Hom_X']
-      · change _ = (E.toRingHom.comp (algebraMap S (S ⊗[P] A))) (σ (X (Sum.inr i))); rw [s3]; simp [E, F, fS]; erw [MvPolynomial.eval₂Hom_C]; simp [gy]
+      · simp only [MvPolynomial.eval₂Hom_X', Sum.elim_inl, RingHom.comp_apply,
+          RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom, s2, hE, hFSX]
+      · simp only [MvPolynomial.eval₂Hom_X', Sum.elim_inr, RingHom.comp_apply,
+          RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom, s3, hE, hFSC, hgX]
   rw [key]
   exact RingHom.Etale.respectsIso.2 _ σ (RingHom.Etale.respectsIso.1 _ E hb)
 
