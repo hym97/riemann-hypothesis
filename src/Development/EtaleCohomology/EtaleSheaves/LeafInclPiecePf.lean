@@ -32,12 +32,8 @@ theorem bcLift_lvl {k Ω : Type} [Field k] [Field Ω] [Algebra k Ω] {R R1 R'' :
     (h : R ≤ R'') (h1' : R1 ≤ R'') {Y D : Scheme.{0}} {g : Y ⟶ Sp Ω} {q : D ⟶ Sp R} {v : Y ⟶ D}
     (w : v ≫ q = g ≫ toR R) : bcLift h w ≫ lvl h1 h h1' q = bcLift h1 w := by
   apply pullback.hom_ext
-  · unfold lvl bcLift
-    rw [Category.assoc]
-    erw [pullback.lift_fst, pullback.lift_fst, pullback.lift_fst]
-  · unfold lvl bcLift
-    rw [Category.assoc]
-    erw [pullback.lift_snd, pullback.lift_snd_assoc, pullback.lift_snd, Category.assoc, toR_eq]
+  · simp only [lvl, bcLift, Category.assoc, pullback.lift_fst]
+  · simp only [lvl, bcLift, Category.assoc, pullback.lift_snd, pullback.lift_snd_assoc, toR_eq]
 
 def LeafInclMap : Prop := ∀ (k : Type) [Field k] (Ω : Type) [Field Ω] [Algebra k Ω] {X : Scheme.{0}}
     (f : X ⟶ Sp Ω), FP f → ∀ (U W : X.Opens) (hWU : W ≤ U) (R : Subalgebra k Ω), R.FG →
@@ -69,12 +65,8 @@ theorem LeafInclPiece_of (hA : LeafInclMap) (hB : LeafInclOpen) : LeafInclPiece 
   apply pullback.hom_ext
   · simp only [descMap, Category.assoc, pullback.lift_fst]
     rw [reassoc_of% (bcLift_lvl h1 h h1' hW.w), reassoc_of% hc]
-    unfold bcLift
-    erw [pullback.lift_fst, pullback.lift_fst]
-  · simp only [descMap, Category.assoc, pullback.lift_snd]
-    unfold bcLift
-    erw [pullback.lift_snd, pullback.lift_snd]
-    simp only [Category.assoc, Scheme.homOfLE_ι_assoc]
+    simp only [bcLift, Category.assoc, pullback.lift_fst]
+  · simp only [descMap, Category.assoc, pullback.lift_snd, bcLift, Scheme.homOfLE_ι_assoc]
 
 end LateralTheory.E.LeafInclPiecePf
 end
